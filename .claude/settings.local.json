@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path \"D:\\\\A new brand store\" -Force)",
+      "Bash(Select-Object Name, Mode, Length, LastWriteTime)",
+      "Bash(Format-Table)",
+      "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --no-git --use-npm)",
+      "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --no-git --use-npm --yes)",
+      "PowerShell(New-Item *)",
+      "Bash(npx shadcn@latest init --defaults --yes)",
+      "Bash(npx shadcn@latest add button card input label badge dialog dropdown-menu select tabs toast skeleton separator avatar progress slider switch checkbox --yes)",
+      "Bash(npx shadcn@latest add button card input label badge dialog dropdown-menu select tabs sonner skeleton separator avatar progress slider switch checkbox --yes)",
+      "Bash(npx shadcn@latest add dialog --yes)",
+      "Bash(Get-ChildItem -Path \"D:\\\\A new brand store\" -Recurse -File)",
+      "Bash(Select-Object Name, FullName, LastWriteTime)",
+      "Bash(Format-Table -AutoSize)",
+      "Bash(powershell.exe *)",
+      "Bash(npm run *)",
+      "Bash(node -e \"const l = require\\('lucide-react'\\); console.log\\(Object.keys\\(l\\).filter\\(k => k.toLowerCase\\(\\).includes\\('social'\\) || k.toLowerCase\\(\\).includes\\('camera'\\) || k.toLowerCase\\(\\).includes\\('heart'\\) || k.toLowerCase\\(\\).includes\\('star'\\)\\).slice\\(0, 30\\).join\\('\\\\n'\\)\\)\")",
+      "Bash(node -e \"const l = require\\('lucide-react'\\); console.log\\(Object.keys\\(l\\).filter\\(k => k.match\\(/^\\(Thumbs|Heart|Star|Bell|Briefcase|Bag|Shopping|Packet|Crown\\)/i\\)\\).join\\('\\\\n'\\)\\)\")",
+      "Bash(Get-ChildItem -Path . -Force)",
+      "Bash(Select-Object Name, Mode)",
+      "Bash(powershell *)",
+      "Bash(npx supabase *)",
+      "Bash(npx tsx *)",
+      "Bash(Remove-Item *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000)",
+      "Bash(curl -s http://localhost:3000/shop)",
+      "Bash(Write-Host \"Files removed\")",
+      "Bash(Start-Sleep -Seconds 8)",
+      "Bash(Get-Content \"C:\\\\Users\\\\RX\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\D--A-new-brand-store\\\\9c254d08-1c80-4b57-82ef-ee45458e42c7\\\\tasks\\\\bq2hav3fd.output\" -Tail 30)",
+      "Bash(supabase *)",
+      "Bash(Select-Object -First 50)"
+    ]
+  }
+}
