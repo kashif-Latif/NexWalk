@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { useAuth } from '@/context/AuthContext';
 import {
   Star,
   Heart,
@@ -123,6 +124,7 @@ export default function ProductDetailPage() {
   const params = useParams();
   const slug = params.slug as string;
 
+  const { user } = useAuth();
   const { addItem } = useCart();
   const { isInWishlist, toggleItem } = useWishlist();
 
@@ -238,6 +240,10 @@ export default function ProductDetailPage() {
     : 0;
 
   const handleAddToCart = () => {
+    if (!user) {
+      window.location.href = '/auth/login?redirect=/product/' + slug;
+      return;
+    }
     if (!selectedSize) {
       toast.error('Please select a size');
       return;
@@ -251,6 +257,10 @@ export default function ProductDetailPage() {
   };
 
   const handleToggleWishlist = () => {
+    if (!user) {
+      window.location.href = '/auth/login?redirect=/product/' + slug;
+      return;
+    }
     toggleItem(product);
     toast.success(inWishlist ? 'Removed from wishlist' : 'Added to wishlist!');
   };

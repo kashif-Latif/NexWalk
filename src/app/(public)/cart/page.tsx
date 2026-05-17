@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -16,6 +16,7 @@ import {
   RotateCcw,
 } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
+import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
@@ -24,8 +25,20 @@ const defaultImage = 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?
 
 export default function CartPage() {
   const router = useRouter();
+  const { user, isLoading: authLoading } = useAuth();
   const { items, removeItem, updateQuantity, subtotal, totalItems } = useCart();
   const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
+
+  // Auth guard: redirect to login if not authenticated
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.replace('/auth/login?redirect=/cart');
+    }
+  }, [user, authLoading, router]);
+
+  if (authLoading || !user) {
+    return null;
+  }
 
   const shippingCost = subtotal >= 3000 ? 0 : 250;
   const total = subtotal + shippingCost;

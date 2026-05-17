@@ -8,6 +8,7 @@ import { Heart, Star, ShoppingCart } from 'lucide-react';
 import { Product } from '@/types';
 import { useCart } from '@/context/CartContext';
 import { useWishlist } from '@/context/WishlistContext';
+import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
 
 interface ProductCardProps {
@@ -20,6 +21,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [selectedImage, setSelectedImage] = useState(0);
   const [imageError, setImageError] = useState(false);
+  const { user } = useAuth();
   const { addItem } = useCart();
   const { isInWishlist, toggleItem } = useWishlist();
 
@@ -38,6 +40,10 @@ export default function ProductCard({ product }: ProductCardProps) {
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    if (!user) {
+      window.location.href = '/auth/login?redirect=/shop';
+      return;
+    }
     const defaultSize = product.sizes?.[0] || 'M';
     const defaultColor = product.colors?.[0]?.name || 'Default';
     addItem(product, 1, defaultSize, defaultColor);
@@ -47,6 +53,10 @@ export default function ProductCard({ product }: ProductCardProps) {
   const handleToggleWishlist = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    if (!user) {
+      window.location.href = '/auth/login?redirect=/shop';
+      return;
+    }
     toggleItem(product);
     toast.success(inWishlist ? 'Removed from wishlist' : 'Added to wishlist!');
   };

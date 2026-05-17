@@ -1,8 +1,10 @@
 'use client';
 
+import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import {
   Heart,
   Trash2,
@@ -11,13 +13,27 @@ import {
 } from 'lucide-react';
 import { useWishlist } from '@/context/WishlistContext';
 import { useCart } from '@/context/CartContext';
+import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 
 export default function WishlistPage() {
+  const router = useRouter();
+  const { user, isLoading: authLoading } = useAuth();
   const { items, removeItem, clearWishlist } = useWishlist();
   const { addItem } = useCart();
+
+  // Auth guard: redirect to login if not authenticated
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.replace('/auth/login?redirect=/wishlist');
+    }
+  }, [user, authLoading, router]);
+
+  if (authLoading || !user) {
+    return null;
+  }
 
   const handleAddToCart = (product: typeof items[0]) => {
     const defaultSize = product.sizes?.[0] || 'M';
