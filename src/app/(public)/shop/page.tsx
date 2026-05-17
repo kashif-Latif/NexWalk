@@ -56,6 +56,94 @@ function mapDbProduct(p: DbProduct & { categories?: DbCategory | null }): Produc
   };
 }
 
+// Reusable sidebar filters content
+function SidebarFilters({
+  categories,
+  selectedCategory,
+  selectedPriceRange,
+  updateFilter,
+  setSelectedPriceRange,
+  setCurrentPage,
+}: {
+  categories: Array<{ id: string; name: string; slug: string }>;
+  selectedCategory: string;
+  selectedPriceRange: typeof priceRanges[0] | null;
+  updateFilter: (type: 'category' | 'price', value: string | typeof priceRanges[0]) => void;
+  setSelectedPriceRange: (val: typeof priceRanges[0] | null) => void;
+  setCurrentPage: (val: number) => void;
+}) {
+  return (
+    <>
+      {/* Categories */}
+      <div className="mb-8">
+        <h3 className="text-sm font-semibold text-white mb-4 uppercase tracking-wider">
+          Categories
+        </h3>
+        <div className="space-y-2">
+          <button
+            onClick={() => updateFilter('category', 'all')}
+            className={`block w-full text-left px-4 py-2 rounded-lg text-sm transition-colors ${
+              selectedCategory === 'all'
+                ? 'bg-orange-500/20 text-orange-500'
+                : 'text-gray-400 hover:bg-white/5 hover:text-white'
+            }`}
+          >
+            All Products
+          </button>
+          {categories.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => updateFilter('category', cat.id)}
+              className={`block w-full text-left px-4 py-2 rounded-lg text-sm transition-colors ${
+                selectedCategory === cat.id
+                  ? 'bg-orange-500/20 text-orange-500'
+                  : 'text-gray-400 hover:bg-white/5 hover:text-white'
+              }`}
+            >
+              {cat.name.charAt(0).toUpperCase() + cat.name.slice(1)}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Price Range */}
+      <div className="mb-8">
+        <h3 className="text-sm font-semibold text-white mb-4 uppercase tracking-wider">
+          Price Range
+        </h3>
+        <div className="space-y-2">
+          <button
+            onClick={() => {
+              setSelectedPriceRange(null);
+              setCurrentPage(1);
+            }}
+            className={`block w-full text-left px-4 py-2 rounded-lg text-sm transition-colors ${
+              selectedPriceRange === null
+                ? 'bg-orange-500/20 text-orange-500'
+                : 'text-gray-400 hover:bg-white/5 hover:text-white'
+            }`}
+          >
+            All Prices
+          </button>
+          {priceRanges.map((range) => (
+            <button
+              key={range.name}
+              onClick={() => updateFilter('price', range)}
+              className={`block w-full text-left px-4 py-2 rounded-lg text-sm transition-colors ${
+                selectedPriceRange?.name === range.name
+                  ? 'bg-orange-500/20 text-orange-500'
+                  : 'text-gray-400 hover:bg-white/5 hover:text-white'
+              }`}
+            >
+              {range.name}
+            </button>
+          ))}
+        </div>
+      </div>
+    </>
+  );
+}
+
 function ShopContent() {
   const searchParams = useSearchParams();
   const [showFilters, setShowFilters] = useState(false);
@@ -146,6 +234,17 @@ function ShopContent() {
     );
   }
 
+  const sidebarFilters = (
+    <SidebarFilters
+      categories={categories}
+      selectedCategory={selectedCategory}
+      selectedPriceRange={selectedPriceRange}
+      updateFilter={updateFilter}
+      setSelectedPriceRange={setSelectedPriceRange}
+      setCurrentPage={setCurrentPage}
+    />
+  );
+
   return (
     <>
       <Navbar />
@@ -174,7 +273,7 @@ function ShopContent() {
       {/* Main Content */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Toolbar */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-8">
           <div className="flex items-center gap-4">
             {/* Filter Toggle (Mobile) */}
             <button
@@ -237,103 +336,41 @@ function ShopContent() {
           </div>
         </div>
 
-        <div className="flex gap-8">
-          {/* Sidebar Filters */}
+        <div className="flex gap-4 lg:gap-8">
+          {/* Desktop Sidebar - always visible on lg+ */}
+          <aside className="hidden lg:block lg:w-64 flex-shrink-0">
+            {sidebarFilters}
+          </aside>
+
+          {/* Mobile Filters Overlay */}
           <AnimatePresence>
-            {(showFilters || true) && (
+            {showFilters && (
               <motion.aside
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                className={`${showFilters ? 'fixed inset-0 z-50 bg-[#0a0a0a] p-4 overflow-auto' : 'hidden'} lg:block lg:relative lg:bg-transparent lg:p-0 lg:w-64 flex-shrink-0`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-50 bg-[#0a0a0a] p-4 overflow-auto lg:hidden"
               >
-                {/* Mobile Close Button */}
-                <div className="lg:hidden flex items-center justify-between mb-6">
+                <div className="flex items-center justify-between mb-6">
                   <h2 className="text-lg font-semibold text-white">Filters</h2>
                   <button onClick={() => setShowFilters(false)}>
                     <X className="w-6 h-6 text-white" />
                   </button>
                 </div>
-
-                {/* Categories */}
-                <div className="mb-8">
-                  <h3 className="text-sm font-semibold text-white mb-4 uppercase tracking-wider">
-                    Categories
-                  </h3>
-                  <div className="space-y-2">
-                    <button
-                      onClick={() => updateFilter('category', 'all')}
-                      className={`block w-full text-left px-4 py-2 rounded-lg text-sm transition-colors ${
-                        selectedCategory === 'all'
-                          ? 'bg-orange-500/20 text-orange-500'
-                          : 'text-gray-400 hover:bg-white/5 hover:text-white'
-                      }`}
-                    >
-                      All Products
-                    </button>
-                    {categories.map((cat) => (
-                      <button
-                        key={cat.id}
-                        onClick={() => updateFilter('category', cat.id)}
-                        className={`block w-full text-left px-4 py-2 rounded-lg text-sm transition-colors ${
-                          selectedCategory === cat.id
-                            ? 'bg-orange-500/20 text-orange-500'
-                            : 'text-gray-400 hover:bg-white/5 hover:text-white'
-                        }`}
-                      >
-                        {cat.name.charAt(0).toUpperCase() + cat.name.slice(1)}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Price Range */}
-                <div className="mb-8">
-                  <h3 className="text-sm font-semibold text-white mb-4 uppercase tracking-wider">
-                    Price Range
-                  </h3>
-                  <div className="space-y-2">
-                    <button
-                      onClick={() => {
-                        setSelectedPriceRange(null);
-                        setCurrentPage(1);
-                      }}
-                      className={`block w-full text-left px-4 py-2 rounded-lg text-sm transition-colors ${
-                        selectedPriceRange === null
-                          ? 'bg-orange-500/20 text-orange-500'
-                          : 'text-gray-400 hover:bg-white/5 hover:text-white'
-                      }`}
-                    >
-                      All Prices
-                    </button>
-                    {priceRanges.map((range) => (
-                      <button
-                        key={range.name}
-                        onClick={() => updateFilter('price', range)}
-                        className={`block w-full text-left px-4 py-2 rounded-lg text-sm transition-colors ${
-                          selectedPriceRange?.name === range.name
-                            ? 'bg-orange-500/20 text-orange-500'
-                            : 'text-gray-400 hover:bg-white/5 hover:text-white'
-                        }`}
-                      >
-                        {range.name}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+                {sidebarFilters}
               </motion.aside>
             )}
           </AnimatePresence>
 
           {/* Product Grid */}
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             {paginatedProducts.length > 0 ? (
               <>
                 <motion.div
                   key={`${viewMode}-${selectedCategory}-${selectedPriceRange?.name || 'all'}`}
-                  className={`grid gap-4 ${
+                  className={`grid gap-3 sm:gap-4 ${
                     viewMode === 'grid'
-                      ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5'
+                      ? 'grid-cols-1 min-[400px]:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
                       : 'grid-cols-1'
                   }`}
                   initial={{ opacity: 0 }}
